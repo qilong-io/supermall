@@ -29,6 +29,7 @@ export default {
   methods: {
     itemClick(index) {
       this.currentIndex = index
+      this.$emit('tabClick', index)
     }
   }
 }
@@ -55,10 +56,10 @@ export default {
 }
 
 .active {
-  color: var(--color-high-text);
+  color: Var(--color-high-text);
 }
 
 .active span {
-  border-bottom: 3px solid var(--color-tint);
+  border-bottom: 3px solid Var(--color-tint);
 }
 </style>
