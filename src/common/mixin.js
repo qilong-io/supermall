@@ -18,3 +18,27 @@ export const itemListenerMixin = {
     this.$bus.$on('itemImgLoad', this.itemImgListener)
   }
 }
+
+
+import BackTop from "@/components/content/backTop/BackTop";
+import {BACKTOP_DISTANCE} from "@/common/const";
+
+export const backTopMixin = {
+  components: {
+    BackTop,
+  },
+  data() {
+    return {
+      isShowBackTop: false,
+    }
+  },
+  methods: {
+    // 返回到頂部
+    backTop() {
+      this.$refs.scroll.scrollTo(0, 0)
+    },
+    listenShowBackTop(positoinY) {
+      this.isShowBackTop = positoinY > BACKTOP_DISTANCE
+    },
+  },
+}

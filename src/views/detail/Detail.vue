@@ -16,6 +16,9 @@
       <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
       <detail-recommend-info :recommend-list="recommends" ref="recommend"></detail-recommend-info>
     </scroll>
+    <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
+
+    <back-top v-show="isShowBackTop" @click.native="backTop"></back-top>
   </div>
 </template>
 
@@ -31,12 +34,12 @@ import DetailGoodsInfo from "@/views/detail/childComps/DetailGoodsInfo";
 import DetailParamInfo from "@/views/detail/childComps/DetailParamInfo";
 import DetailCommentInfo from "@/views/detail/childComps/DetailCommentInfo";
 import DetailRecommendInfo from "@/views/detail/childComps/DetailRecommendInfo";
+import DetailBottomBar from "@/views/detail/childComps/DetailBottomBar";
 
 import {getGoodsDetail, getRecommend, GoodsParam, Goods, Shop} from "@/network/detail";
 
-import {itemListenerMixin} from "@/common/mixin";
+import {backTopMixin, itemListenerMixin} from "@/common/mixin";
 import {debounce} from "@/common/utils";
-
 
 export default {
   name: "Detail",
@@ -87,17 +90,38 @@ export default {
       // 方法2:
       const positoinY = -pos.y
       const length = this.themeTopYs.length
-      for (let index = 0; index < length; index++) {
-        if (this.currentIndex != index && ((index < length - 1 && positoinY >= this.themeTopYs[index] && positoinY < this.themeTopYs[index + 1]) || (index === length - 1 && positoinY > this.themeTopYs[index]))) {
+      // // 判断方式1
+      // for (let index = 0; index < length; index++) {
+      //   if (this.currentIndex != index && ((index < length - 1 && positoinY >= this.themeTopYs[index] && positoinY < this.themeTopYs[index + 1]) || (index === length - 1 && positoinY > this.themeTopYs[index]))) {
+      //     this.currentIndex = index
+      //     this.$refs.detailNavBar.currentIndex = this.currentIndex
+      //     console.log(this.currentIndex);
+      //   }
+      // }
+
+      // 判断方式2 注意这个方法需要在 this.themeTopYs中最后加一个 比较大的值
+      for (let index = 0; index < length - 1; index++) {
+        if (this.currentIndex !== index && (positoinY >= this.themeTopYs[index] && positoinY < this.themeTopYs[index + 1])) {
           this.currentIndex = index
           this.$refs.detailNavBar.currentIndex = this.currentIndex
           console.log(this.currentIndex);
         }
-
       }
+      this.listenShowBackTop(positoinY)
     },
+    addToCart() {
+      const product = {}
+      product.image = this.topImages[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.nowPrice
+      product.iid = this.iid
+
+      // this.$store.commit('addCart', product) //commit 调用  mutations 中方法
+      this.$store.dispatch('addCart', product) //dispatch 调用  actions 中的方法
+    }
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   created() {
     // 保存传过来的 iid
     this.iid = this.$route.params.iid
@@ -158,6 +182,7 @@ export default {
       this.themeTopYs.push(this.$refs.params.$el.offsetTop)
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+      this.themeTopYs.push(9000000) // 为了 scrollListener 方法中的 判断
       console.log(this.themeTopYs);
     }, 500)
 
@@ -178,6 +203,7 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     DetailRecommendInfo,
+    DetailBottomBar,
   }
 }
 </script>
@@ -198,6 +224,6 @@ export default {
 }
 
 .content {
-  height: calc(100% - 44px);
+  height: calc(100% - 93px);
 }
 </style>

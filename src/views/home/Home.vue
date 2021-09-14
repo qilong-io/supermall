@@ -24,7 +24,7 @@
     </scroll>
     <!--  .native 在我们需要监听一个组件的原生事件时，必须给对应事件加上.native修饰符，才能进行监听-->
     <back-top @click.native="backTop"
-              v-show="showBackTop"/>
+              v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -37,11 +37,10 @@ import NavBar from "@/components/common/navbar/NavBar";
 import TabControl from "@/components/content/tabControl/TabControl";
 import GoodsList from "@/components/content/goods/GoodsList";
 import Scroll from "@/components/common/scroll/Scroll";
-import BackTop from "@/components/content/backTop/BackTop";
 
 
 import * as homeRequest from "@/network/home";
-import {itemListenerMixin} from "@/common/mixin";
+import {backTopMixin, itemListenerMixin} from "@/common/mixin";
 
 export default {
   name: "Home",
@@ -55,8 +54,6 @@ export default {
         'sell': {page: 0, list: []},
       },
       currentType: 'pop',
-      // 是否显示 返回顶部按钮
-      showBackTop: false,
       // 记录 tabCotrol 所在页面上的位置
       tabOffsetTop: 0,
       // 标记 tabControl是否吸顶
@@ -73,7 +70,7 @@ export default {
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   mounted() {
     //
     // const refresh = debounce(this.$refs.scroll.refresh, 500)
@@ -117,15 +114,10 @@ export default {
     // 获取页面滚动的高度
     contentScroll(position) {
       //控制 回到顶部按钮的显示/隐藏
-      this.showBackTop = position.y < -1500
-
+      this.listenShowBackTop(-position.y)
       // 决定是否吸顶
       this.isTabFixed = -position.y > this.tabOffsetTop
 
-    },
-    // 返回到頂部
-    backTop() {
-      this.$refs.scroll.scrollTo(0, 0)
     },
 
     /**
@@ -185,7 +177,6 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop,
   },
 }
 </script>
