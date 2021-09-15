@@ -19,6 +19,8 @@
     <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
 
     <back-top v-show="isShowBackTop" @click.native="backTop"></back-top>
+
+    <!--    <Toast :message="message" :show="show"></Toast>-->
   </div>
 </template>
 
@@ -41,6 +43,9 @@ import {getGoodsDetail, getRecommend, GoodsParam, Goods, Shop} from "@/network/d
 import {backTopMixin, itemListenerMixin} from "@/common/mixin";
 import {debounce} from "@/common/utils";
 
+import {mapActions} from "vuex";
+// import Toast from "@/components/common/toast/Toast";
+
 export default {
   name: "Detail",
   data() {
@@ -57,9 +62,12 @@ export default {
       themeTopYs: [],
       getThemeTopY: null,
       currentIndex: 0,
+      // message: '',
+      // show: false,
     }
   },
   methods: {
+    ...mapActions(['addCart']),
     imgLoad() {
       this.newRefresh()
       this.getThemeTopY()
@@ -118,7 +126,21 @@ export default {
       product.iid = this.iid
 
       // this.$store.commit('addCart', product) //commit 调用  mutations 中方法
-      this.$store.dispatch('addCart', product) //dispatch 调用  actions 中的方法
+      //dispatch 调用  actions 中的方法
+      // this.$store.dispatch('addCart', product).then(res => {
+      //   console.log(res);
+      // })
+      // 通过 mapActions 映射过来的方法
+      this.addCart(product).then(res => {
+        console.log(res);
+
+        this.$toast.show(res)
+        // this.show = true
+        // this.message = res
+        // setTimeout(() => {
+        //   this.show = false
+        // }, 1500)
+      })
     }
   },
   mixins: [itemListenerMixin, backTopMixin],
@@ -204,11 +226,13 @@ export default {
     DetailCommentInfo,
     DetailRecommendInfo,
     DetailBottomBar,
+    // Toast,
   }
 }
 </script>
 
 <style scoped>
+
 
 #detail {
   position: relative;

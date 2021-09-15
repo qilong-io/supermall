@@ -1,31 +1,32 @@
 <template>
   <div class="cart">
     <cart-nav-bar></cart-nav-bar>
-    <ul>
-      <li v-for="item in cartList">{{ item.title }}</li>
-    </ul>
+    <cart-list></cart-list>
+    <CartBottomBar></CartBottomBar>
   </div>
 </template>
 
 <script>
 import CartNavBar from "@/views/cart/childComps/CartNavBar";
-import {mapGetters} from "vuex";
+import CartList from "@/views/cart/childComps/CartList";
+import Scroll from "@/components/common/scroll/Scroll";
+import CartBottomBar from "@/views/cart/childComps/CartBottomBar";
 
 export default {
   name: "Cart",
   components: {
+    CartBottomBar,
+    Scroll,
+    CartList,
     CartNavBar,
   },
-  computed: {
-    ...mapGetters(['cartList']),
-    // ...mapGetters({
-    //   length: 'cartLength',
-    //   cartList: 'cartList',
-    // })
-  }
+  computed: {}
 }
 </script>
 
 <style scoped>
+.cart {
+  height: 100vh;
+}
 
 </style>
